@@ -10,14 +10,15 @@ class Crawler_LTN:
         自由電子報
     """
     def __init__(self):
-        self.YUNLIN = "https://news.ltn.com.tw/ajax/breakingnews/Yunlin/"
-        self.POLITIC = "https://news.ltn.com.tw/ajax/breakingnews/politics/"
+        pass
     
     def call_api(self, API_URL,start_date=None, end_date=None):
         if start_date is None:
-            start_date = datetime(2020,1,1)
+            start_date = datetime.today()
         else:
             start_date = datetime.strptime(start_date, "%Y-%m-%d")
+        
+        start_date = start_date.replace(hour=0, minute=0)
         
         if end_date is None:
             end_date = datetime.today()
@@ -28,7 +29,7 @@ class Crawler_LTN:
         today_docs, api_idx = self.crawl_today(API_URL)
         history_docs = self.crawl_history(API_URL, api_idx+1, start_date, end_date)
         final_df = pd.DataFrame(today_docs + history_docs)
-        final_df = final_df.query("date > '{}' & date <= '{}'".format(start_date, end_date))
+        final_df = final_df.query("date >= '{}' & date <= '{}'".format(start_date, end_date))
         return final_df
 
     # Because the formats of current day and previous day are different.
@@ -50,10 +51,10 @@ class Crawler_LTN:
 
                 date = date.strftime("%Y-%m-%d %H:%M")
                 title = data['title']
-                print("開始瀏覽:{}".format(title))
-                print("新聞日期:{}".format(date))
                 url = data['url']
                 forum = data['type_cn']
+                print("[自由-{}]開始瀏覽:{}".format(forum, title))
+                print("[自由-{}]新聞日期:{}".format(forum, date))
                 content = self.crawl_content(url)
                 docs.append({"title":title, "date": date, "url": url, "content": content, "source":"自由", "forum": forum})
             api_idx += 1
@@ -79,9 +80,9 @@ class Crawler_LTN:
 
                 date = date.strftime("%Y-%m-%d %H:%M")
                 title = data_obj[idx]['title']
-                print("開始瀏覽:{}".format(title))
-                print("新聞日期:{}".format(date))
                 forum = data_obj[idx]['type_cn']
+                print("[自由-{}]開始瀏覽:{}".format(forum, title))
+                print("[自由-{}]新聞日期:{}".format(forum, date))
                 url = data_obj[idx]['url']
                 content = self.crawl_content(url)
                 docs.append({"title":title, "date": date, "url": url, "content": content, "source":"自由", "forum": forum})
@@ -129,7 +130,9 @@ def clean_text(text):
 
 def filter_keyword(dataframe, keyword_list):
     keyword_text = "|".join(keyword_list)
-    return dataframe[(dataframe.title.str.contains(keyword_text)) | (dataframe.content.str.contains(keyword_text))]
+    filter_df = dataframe[(dataframe.title.str.contains(keyword_text)) | (dataframe.content.str.contains(keyword_text))]
+    print("已瀏覽日期區間所有{}則新聞, 符合關鍵字的共有{}則新聞！".format(dataframe.shape[0], filter_df.shape[0]))
+    return filter_df
 
 if __name__ == "__main__":
     crawler = Crawler_LTN()
