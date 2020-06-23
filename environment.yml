@@ -1,0 +1,51 @@
+name: crawler
+channels:
+  - anaconda
+  - ostrokach-forge
+  - pkgw-forge
+  - conda-forge
+  - defaults
+dependencies:
+  - beautifulsoup4=4.9.1=py37_0
+  - blas=1.0=mkl
+  - brotlipy=0.7.0=py37haf1e3a3_1000
+  - ca-certificates=2020.1.1=0
+  - certifi=2020.6.20=py37_0
+  - cffi=1.14.0=py37hb5b8e2f_0
+  - chardet=3.0.4=py37_1003
+  - cryptography=2.9.2=py37ha12b0ac_0
+  - idna=2.9=py_1
+  - intel-openmp=2020.1=216
+  - libcxx=10.0.0=h1af66ff_2
+  - libffi=3.2.1=h4a8c4bd_1007
+  - libgfortran=3.0.1=h93005f0_2
+  - mkl=2019.4=233
+  - mkl-service=2.3.0=py37hfbe908c_0
+  - mkl_fft=1.1.0=py37hc64f4ea_0
+  - mkl_random=1.1.1=py37h959d312_0
+  - ncurses=6.1=h0a44026_1002
+  - numpy=1.18.1=py37h7241aed_0
+  - numpy-base=1.18.1=py37h3304bdc_1
+  - openssl=1.1.1g=h1de35cc_0
+  - pandas=1.0.5=py37h959d312_0
+  - pip=20.1.1=py_1
+  - pycparser=2.20=py_0
+  - pyopenssl=19.1.0=py37_0
+  - pysocks=1.7.1=py37_0
+  - python=3.7.6=cpython_h1fd5dd1_6
+  - python-dateutil=2.8.1=py_0
+  - python_abi=3.7=1_cp37m
+  - pytz=2020.1=py_0
+  - readline=8.0=hcfe32e1_0
+  - requests=2.23.0=py37_0
+  - setuptools=47.3.1=py37hc8dfbb8_0
+  - six=1.15.0=py_0
+  - soupsieve=2.0.1=py_0
+  - sqlite=3.30.1=h93121df_0
+  - tk=8.6.10=hbbe82c9_0
+  - urllib3=1.25.9=py_0
+  - wheel=0.34.2=py_1
+  - xz=5.2.5=h0b31af3_0
+  - zlib=1.2.11=h0b31af3_1006
+prefix: /Users/minglunwu/anaconda/envs/crawler
+
