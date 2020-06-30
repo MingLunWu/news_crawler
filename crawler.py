@@ -55,8 +55,8 @@ class Crawler_LTN:
                 forum = data['type_cn']
                 print("[自由-{}]開始瀏覽:{}".format(forum, title))
                 print("[自由-{}]新聞日期:{}".format(forum, date))
-                content = self.crawl_content(url)
-                docs.append({"title":title, "date": date, "url": url, "content": content, "source":"自由", "forum": forum})
+                content, reporter = self.crawl_content(url)
+                docs.append({"title":title, "date": date, "url": url, "content": content, "source":"自由", "forum": forum, "reporter": reporter})
             api_idx += 1
     
     def crawl_history(self, API_URL, api_idx, start_date, end_date):
@@ -84,8 +84,8 @@ class Crawler_LTN:
                 print("[自由-{}]開始瀏覽:{}".format(forum, title))
                 print("[自由-{}]新聞日期:{}".format(forum, date))
                 url = data_obj[idx]['url']
-                content = self.crawl_content(url)
-                docs.append({"title":title, "date": date, "url": url, "content": content, "source":"自由", "forum": forum})
+                content, reporter = self.crawl_content(url)
+                docs.append({"title":title, "date": date, "url": url, "content": content, "source":"自由", "forum": forum, "reporter":reporter})
             api_idx += 1
         
 
@@ -119,9 +119,19 @@ class Crawler_LTN:
         r = requests.get(URL)
         origin_html = r.text
         soup = BeautifulSoup(origin_html, "html.parser")
-        content = "".join([x.text for x in soup.find_all("p", {"id":None})])
+        query_result = soup.find_all("p", {"id":None})
+        content = ""
+        for i in query_result[2:]: # First two elements must be "browser alert" and useless tag.
+            if "appE1121" in i.get_attribute_list("class"): # If this class appears, means that the article is over. (below is advertisement.)
+                break
+            else:
+                content = content + " " + i.get_text()
         content = clean_text(content)
-        return content
+        try:
+            reporter = re.search("(?<=記者).{3}", content).group(0)
+        except:
+            reporter = None
+        return content, reporter
 
 def clean_text(text):
     output = re.sub("\s+", "", text) # Remove Space.
@@ -135,6 +145,8 @@ def filter_keyword(dataframe, keyword_list):
     return filter_df
 
 if __name__ == "__main__":
+    YUNLIN = "https://news.ltn.com.tw/ajax/breakingnews/Yunlin/"
+    POLITIC = "https://news.ltn.com.tw/ajax/breakingnews/politics/"
     crawler = Crawler_LTN()
-    result = crawler.call_api(crawler.YUNLIN, "2020-06-21", "2020-06-22")
+    result = crawler.call_api(YUNLIN, "2020-06-21", "2020-06-22")
     print("test")       
