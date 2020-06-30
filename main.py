@@ -39,6 +39,6 @@ if param["keyword"] is None or len(param["keyword"])==0:
     print("未設定關鍵字！共有{}則新聞".format(result.shape[0]))
 else:
     result = filter_keyword(result, param['keyword'])
-
+ 
 result.to_csv(os.path.join(os.getcwd(), "output", datetime.datetime.now().strftime("%y_%m_%d_%H_%M")+".csv"))
 print("查詢程序完成！已儲存資料！")
