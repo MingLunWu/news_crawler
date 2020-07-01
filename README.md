@@ -1,7 +1,8 @@
 # news_crawler
 
 This tool is used for extracting daily news (Traditional Chinese) from different sources in Taiwan, include:
-- [x] LTN (Developing)
+- [x] LTN (Done)
+- [x] Yunlin County Government (Done)
 - [ ] ChinaTimes (TBD)
 - [ ] UDN (TBD)
 - [ ] EBC (TBD)
