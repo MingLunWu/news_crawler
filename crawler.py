@@ -133,6 +133,65 @@ class Crawler_LTN:
             reporter = None
         return content, reporter
 
+class Crawler_YUNLIN_GOV:
+    """ This class use to extract news from 'https://www.yunlin.gov.tw' (Yunlin County Government)
+    """
+    def __init__(self):
+        pass
+
+    def call_api(self, start_date=None, end_date=None):
+        result = list()
+        if start_date is None or start_date == "today":
+            start_date = datetime.today()
+            start_date = start_date.replace(hour=0, minute=0)
+        else:
+            start_date = datetime.strptime(start_date, "%Y-%m-%d")
+        
+        if end_date is None or end_date == "today":
+            end_date = datetime.today()
+        else:
+            end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            
+        end_date = end_date.replace(hour=23, minute=59)
+        
+        idx = 1 
+        while True:
+            r = requests.get("https://www.yunlin.gov.tw/News.aspx?n=1244&sms=9662&page={}&PageSize=200".format(idx))
+            soup = BeautifulSoup(r.text, "html.parser")
+            all_table = soup.find_all("tr")[1:]
+            for a_news in all_table:
+                art_type, art_title, _, art_date = [x.text for x in a_news.find_all("td")]
+                art_url = "https://www.yunlin.gov.tw/" + a_news.find("a").get("href")
+                # Convert Taiwan Year to Western Year.
+                temp = art_date.split("-")
+                temp[0] = str(int(temp[0]) + 1911)
+                art_date = "-".join(temp)
+                art_date = datetime.strptime(art_date, "%Y-%m-%d")
+                art_date = art_date.replace(hour=23, minute=58)
+                print("[縣府-{}]開始瀏覽:{}".format(art_type, art_title))
+                print("[縣府-{}]新聞日期:{}".format(art_type, art_date))
+                if art_date < start_date:
+                    if len(result) > 0:
+                        final_df = pd.DataFrame(result)
+                        final_df = final_df.query("date >= '{}' & date <= '{}'".format(datetime.strftime(start_date,"%Y-%m-%d"), datetime.strftime(end_date,"%Y-%m-%d")))
+                    else:
+                        final_df = pd.DataFrame(columns=["title", "date", "url", "content", "source", "forum", "reporter"])
+                    return final_df
+                elif start_date <= art_date < end_date:
+                    art_content, reporter = self.crawl_content(art_url)
+                    result.append({"title":art_title, "date": datetime.strftime(art_date,"%Y-%m-%d"), "url": art_url, "content": art_content, "source":"雲林縣政府", "forum": art_type, "reporter": reporter})
+            idx += 1
+
+    def crawl_content(self, url):
+        r = requests.get(url)
+        soup = BeautifulSoup(r.text, "html.parser")
+        reporter_html = soup.find("div",{"id":"CCMS_Content"}).select("li span")[0].text
+        reporter = re.search("(?<=發布單位：).*", reporter_html).group(0)
+        content = soup.find_all("div", {"class":"p"})[1].text
+        content = clean_text(content)
+        return content, reporter
+
+
 def clean_text(text):
     output = re.sub("\s+", "", text) # Remove Space.
 
@@ -145,8 +204,5 @@ def filter_keyword(dataframe, keyword_list):
     return filter_df
 
 if __name__ == "__main__":
-    YUNLIN = "https://news.ltn.com.tw/ajax/breakingnews/Yunlin/"
-    POLITIC = "https://news.ltn.com.tw/ajax/breakingnews/politics/"
-    crawler = Crawler_LTN()
-    result = crawler.call_api(YUNLIN, "2020-06-21", "2020-06-22")
-    print("test")       
+    crawler = Crawler_YUNLIN_GOV()
+    result = crawler.call_api("2020-06-20","2020-06-25")
