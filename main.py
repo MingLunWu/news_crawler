@@ -1,4 +1,4 @@
-from crawler import Crawler_LTN, filter_keyword
+from crawler import Crawler_LTN, filter_keyword, Crawler_YUNLIN_GOV
 import pandas as pd
 import json 
 import datetime
@@ -34,6 +34,10 @@ result = pd.DataFrame()
 for target in CRAWL_TARGET:
     temp = crawler.call_api(target, start_date, end_date)
     result = pd.concat([result, temp], axis=0)
+
+crawler = Crawler_YUNLIN_GOV()
+temp = crawler.call_api(start_date, end_date)
+result = pd.concat([result, temp], axis=0)
 
 if param["keyword"] is None or len(param["keyword"])==0:
     print("未設定關鍵字！共有{}則新聞".format(result.shape[0]))
