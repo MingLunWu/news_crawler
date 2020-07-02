@@ -1,4 +1,4 @@
-# news_crawler
+# News Extractor - Politic and Yunlin Domain
 
 This tool is a simple public opinion system that used for extracting daily news (Traditional Chinese) from different sources in Taiwan, include:
 - [x] [LTN - Politics + Yunlin Forum](https://www.ltn.com.tw) (Done)
