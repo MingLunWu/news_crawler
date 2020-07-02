@@ -191,6 +191,63 @@ class Crawler_YUNLIN_GOV:
         content = clean_text(content)
         return content, reporter
 
+class Crawler_ChinaTime():
+    def __init__(self):
+        super().__init__()
+    
+    def call_api(self, start_date=None, end_date=None):
+        result = list()
+        if start_date is None or start_date == "today":
+            start_date = datetime.today()
+            start_date = start_date.replace(hour=0, minute=0)
+        else:
+            start_date = datetime.strptime(start_date, "%Y-%m-%d")
+        
+        if end_date is None or end_date == "today":
+            end_date = datetime.today()
+        else:
+            end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            
+        end_date = end_date.replace(hour=23, minute=59)
+        
+        idx = 1
+        while idx<=10:
+            url = "https://www.chinatimes.com/politic/total?page={}&chdtv".format(idx)
+            r = requests.get(url)
+            soup = BeautifulSoup(r.text, "html.parser")
+            all_articles = soup.find_all("div", {"class": "articlebox-compact"})
+            for article in all_articles:
+                art_title = article.find("h3", {"class":"title"}).text
+                art_date = datetime.strptime(article.find("time").get("datetime"), "%Y-%m-%d %H:%M")
+                art_url = "https://www.chinatimes.com"+article.find("h3", {"class":"title"}).find("a").get("href")
+                print("[中時-政治]開始瀏覽:{}".format(art_title))
+                print("[中時-政治]新聞日期:{}".format(art_date))
+                if art_date < start_date:
+                    if len(result) > 0:
+                        final_df = pd.DataFrame(result)
+                        final_df = final_df.query("date >= '{}' & date <= '{}'".format(start_date, end_date))
+                    else:
+                        final_df = pd.DataFrame(columns=["title", "date", "url", "content", "source", "forum", "reporter"])
+                    return final_df
+                elif start_date <= art_date < end_date:
+                    art_content, reporter = self.crawl_content(art_url)
+                    result.append({"title":art_title, "date": datetime.strftime(art_date,"%Y-%m-%d %H:%M"), "url": art_url, "content": art_content, "source":"中時電子報", "forum": "政治", "reporter": reporter})
+            idx += 1
+            
+        if len(result) > 0:
+            final_df = pd.DataFrame(result)
+            # final_df = final_df.query("date >= '{}' & date <= '{}'".format(datetime.strftime(start_date,"%Y-%m-%d"), datetime.strftime(end_date,"%Y-%m-%d")))
+        else:
+            final_df = pd.DataFrame(columns=["title", "date", "url", "content", "source", "forum", "reporter"])
+        return final_df
+
+    def crawl_content(self, url):
+        r = requests.get(url)
+        soup = BeautifulSoup(r.text, "html.parser")
+        content = clean_text(soup.find("div", {"class":"article-body"}).text)
+        reporter = clean_text(soup.find("div", {"class":"author"}).text)
+
+        return content, reporter
 
 def clean_text(text):
     output = re.sub("\s+", "", text) # Remove Space.
@@ -204,5 +261,6 @@ def filter_keyword(dataframe, keyword_list):
     return filter_df
 
 if __name__ == "__main__":
-    crawler = Crawler_YUNLIN_GOV()
-    result = crawler.call_api("2020-06-20","2020-06-25")
+    crawler = Crawler_ChinaTime()
+    result = crawler.call_api("today","today")
+    print("result")

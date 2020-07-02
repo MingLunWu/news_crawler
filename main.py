@@ -1,4 +1,4 @@
-from crawler import Crawler_LTN, filter_keyword, Crawler_YUNLIN_GOV
+from crawler import Crawler_LTN, filter_keyword, Crawler_YUNLIN_GOV, Crawler_ChinaTime
 import pandas as pd
 import json 
 import datetime
@@ -31,11 +31,19 @@ else:
 crawler = Crawler_LTN()
 
 result = pd.DataFrame()
+
+# LTN
 for target in CRAWL_TARGET:
     temp = crawler.call_api(target, start_date, end_date)
     result = pd.concat([result, temp], axis=0)
 
+# Yunlin Gov
 crawler = Crawler_YUNLIN_GOV()
+temp = crawler.call_api(start_date, end_date)
+result = pd.concat([result, temp], axis=0)
+
+# China Time
+crawler = Crawler_ChinaTime()
 temp = crawler.call_api(start_date, end_date)
 result = pd.concat([result, temp], axis=0)
 
