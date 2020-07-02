@@ -1,9 +1,9 @@
 # news_crawler
 
 This tool is a simple public opinion system that used for extracting daily news (Traditional Chinese) from different sources in Taiwan, include:
-- [x] [LTN](https://www.ltn.com.tw) (Done)
+- [x] [LTN - Politics + Yunlin Forum](https://www.ltn.com.tw) (Done)
 - [x] [Yunlin County Government](https://www.yunlin.gov.tw/News.aspx?n=1244&sms=9662) (Done)
-- [ ] ChinaTimes (TBD)
+- [x] [ChinaTimes - Politics Forum](https://www.chinatimes.com/politic/total?page=1&chdtv) (Done)
 - [ ] UDN (TBD)
 - [ ] EBC (TBD)
 - [ ] Apple Daily (TBD)
