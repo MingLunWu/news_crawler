@@ -41,7 +41,7 @@ bash start.sh
 
 After the script executed, the news that match your conditions will be saved as a csv file and written to your project's `output` folder.
 
-Example output: 
+**Example output:** 
 
 |   title   |       date       |                            url                           |     content     | source | forum | reporter |
 |:---------:|:----------------:|:--------------------------------------------------------:|:---------------:|:------:|:-----:|:--------:|
